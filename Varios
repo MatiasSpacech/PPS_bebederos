@@ -1,0 +1,17 @@
+activar el entorno virtual:
+
+venv/bin/activate
+
+
+ejecutar server
+
+uvicorn main:app --reload 
+
+sino en otro puerto:
+uvicorn main:app --port 8001 --reload
+
+
+
+Actualizar requerimientos
+pip freeze > requirements.txt
+

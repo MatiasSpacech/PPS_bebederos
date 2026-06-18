@@ -1,0 +1,8 @@
+El sistema no es solo un bebedero con sensor de nivel — tiene varias capas interesantes:
+Lo que hace cada bebedero:
+
+Mide el nivel de agua con un sensor ultrasónico
+Toma fotos del bebedero con una cámara
+Analiza las imágenes para detectar el porcentaje de cobertura de cápsulas en la superficie
+Si la cobertura baja del objetivo, dosifica automáticamente
+Tiene un scheduler que programa cuándo ejecutar el ciclo (cada 24hs normal, cada 1h si hubo error)

@@ -1,0 +1,96 @@
+erDiagram
+    USUARIOS ||--o{ VETERINARIOS : ""
+    USUARIOS ||--o{ CLIENTES : ""
+    VETERINARIOS ||--o{ CLIENTES : "supervisa"
+    CLIENTES ||--o{ ESTABLECIMIENTOS : ""
+    ESTABLECIMIENTOS ||--o{ BEBEDEROS : ""
+    BEBEDEROS ||--o{ MONITOREO_DIARIO : ""
+    BEBEDEROS ||--o{ IMAGENES : ""
+    BEBEDEROS ||--o{ EVENTOS : ""
+    MONITOREO_DIARIO ||--o{ IMAGENES : ""
+
+    USUARIOS {
+        int id PK
+        string email UK
+        string password_hash
+        string nombre
+        enum rol "admin, veterinario, cliente"
+        boolean activo
+        datetime fecha_creacion
+    }
+
+    VETERINARIOS {
+        int id PK
+        int usuario_id FK
+        string especialidad
+        string telefono
+        string ubicacion
+        datetime fecha_creacion
+    }
+
+    CLIENTES {
+        int id PK
+        int usuario_id FK
+        int veterinario_id FK
+        string razon_social
+        string telefono
+        string contacto_principal
+        datetime fecha_creacion
+    }
+
+    ESTABLECIMIENTOS {
+        int id PK
+        int cliente_id FK
+        string nombre
+        string ubicacion
+        datetime fecha_creacion
+    }
+
+    BEBEDEROS {
+        int id PK
+        int establecimiento_id FK
+        string nombre UK
+        string ubicacion
+        string ip_address
+        int puerto
+        float cobertura_objetivo
+        boolean estado
+        datetime ultima_medicion
+        datetime fecha_creacion
+    }
+
+    MONITOREO_DIARIO {
+        int id PK
+        int bebedero_id FK
+        date fecha UK
+        datetime timestamp
+        float nivel_agua_cm
+        float distancia_sensor_cm
+        float cobertura_capsulas_porciento
+        boolean sensor_ok
+        boolean camera_ok
+        boolean analyzer_ok
+        text error_message
+    }
+
+    IMAGENES {
+        int id PK
+        int monitoreo_id FK
+        int bebedero_id FK
+        string nombre_archivo UK
+        string ruta_filesystem
+        datetime fecha_captura
+        int tamaño_bytes
+        string checksum
+    }
+
+    EVENTOS {
+        int id PK
+        int bebedero_id FK
+        string tipo_evento
+        text descripcion
+        enum gravedad "info, warning, error, critical"
+        datetime timestamp
+        boolean resuelta
+        datetime fecha_resolucion
+    }
