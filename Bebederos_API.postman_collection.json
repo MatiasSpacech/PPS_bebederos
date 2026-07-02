@@ -1,0 +1,845 @@
+{
+  "info": {
+    "name": "Bebederos API",
+    "description": "Backend FastAPI para administración de bebederos, monitoreo y roles. Colección completa de endpoints.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Autenticación",
+      "item": [
+        {
+          "name": "Register - Crear cliente",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"cliente@example.com\",\n  \"password\": \"SecurePass123!\",\n  \"nombre\": \"Cliente Test\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/v1/auth/register",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "auth",
+                "register"
+              ]
+            }
+          },
+          "response": [
+            {
+              "name": "201 Created",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"email\": \"cliente@example.com\",\n  \"password\": \"SecurePass123!\",\n  \"nombre\": \"Cliente Test\"\n}"
+                },
+                "url": {
+                  "raw": "{{base_url}}/api/v1/auth/register",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "auth",
+                    "register"
+                  ]
+                }
+              },
+              "status": "Created",
+              "code": 201,
+              "body": "{\n  \"email\": \"cliente@example.com\",\n  \"nombre\": \"Cliente Test\",\n  \"rol\": \"cliente\",\n  \"activo\": true,\n  \"fecha_creacion\": \"2026-07-01T10:30:00\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "Login",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "  const jsonData = pm.response.json();",
+                  "  pm.environment.set('token', jsonData.access_token);",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"admin@bebederos.com\",\n  \"password\": \"SuperSecure123!\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/v1/auth/login",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "auth",
+                "login"
+              ]
+            }
+          },
+          "response": [
+            {
+              "name": "200 OK",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"email\": \"admin@bebederos.com\",\n  \"password\": \"SuperSecure123!\"\n}"
+                },
+                "url": {
+                  "raw": "{{base_url}}/api/v1/auth/login",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "auth",
+                    "login"
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "body": "{\n  \"access_token\": \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...\",\n  \"token_type\": \"bearer\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "Me - Usuario autenticado",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/auth/me",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "auth",
+                "me"
+              ]
+            }
+          },
+          "response": [
+            {
+              "name": "200 OK",
+              "originalRequest": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{token}}"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/api/v1/auth/me",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "auth",
+                    "me"
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "body": "{\n  \"email\": \"admin@bebederos.com\",\n  \"nombre\": \"Administrador\",\n  \"rol\": \"admin\",\n  \"activo\": true,\n  \"fecha_creacion\": \"2026-06-22T10:30:00\"\n}"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Admin",
+      "item": [
+        {
+          "name": "Init - Crear primer admin",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"admin@bebederos.com\",\n  \"password\": \"SuperSecure123!\",\n  \"nombre\": \"Administrador\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/v1/admin/init",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "admin",
+                "init"
+              ]
+            },
+            "description": "Crea el primer admin. Solo funciona si no existe ningún admin previo. No requiere autenticación."
+          },
+          "response": [
+            {
+              "name": "201 Created",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"email\": \"admin@bebederos.com\",\n  \"password\": \"SuperSecure123!\",\n  \"nombre\": \"Administrador\"\n}"
+                },
+                "url": {
+                  "raw": "{{base_url}}/api/v1/admin/init",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "admin",
+                    "init"
+                  ]
+                }
+              },
+              "status": "Created",
+              "code": 201,
+              "body": "{\n  \"email\": \"admin@bebederos.com\",\n  \"nombre\": \"Administrador\",\n  \"rol\": \"admin\",\n  \"activo\": true,\n  \"fecha_creacion\": \"2026-06-22T10:30:00\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "Dashboard - Panel de admin",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/admin/dashboard",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "admin",
+                "dashboard"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Summary - Métricas operacionales",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/admin/summary",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "admin",
+                "summary"
+              ]
+            },
+            "description": "Resumen con 13 métricas operacionales del sistema."
+          }
+        },
+        {
+          "name": "Crear veterinario",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"veterinario@example.com\",\n  \"password\": \"VetPass123!\",\n  \"nombre\": \"Dr. García\",\n  \"especialidad\": \"Bovinos\",\n  \"telefono\": \"+54 9 1234 5678\",\n  \"ubicacion\": \"Buenos Aires, Argentina\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/v1/admin/veterinarios",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "admin",
+                "veterinarios"
+              ]
+            },
+            "description": "Crea un usuario con rol 'veterinario' y su perfil asociado."
+          }
+        },
+        {
+          "name": "Crear cliente",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"cliente@example.com\",\n  \"password\": \"ClientPass123!\",\n  \"nombre\": \"Juan Pérez\",\n  \"razon_social\": \"Establecimiento La Cabaña\",\n  \"contacto\": \"Juan Pérez - 1122334455\",\n  \"veterinario_id\": 1\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/v1/admin/clientes",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "admin",
+                "clientes"
+              ]
+            },
+            "description": "Crea un usuario con rol 'cliente' y lo asigna a un veterinario."
+          }
+        },
+        {
+          "name": "Actualizar estado de usuario",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"activo\": true\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/v1/admin/usuarios/1/estado",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "admin",
+                "usuarios",
+                "1",
+                "estado"
+              ]
+            },
+            "description": "Activa o desactiva un usuario. Reemplaza '1' con el user_id."
+          }
+        }
+      ]
+    },
+    {
+      "name": "Clientes",
+      "item": [
+        {
+          "name": "Dashboard - Panel del cliente",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/clientes/dashboard",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "clientes",
+                "dashboard"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Me - Cliente autenticado",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/clientes/me",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "clientes",
+                "me"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Detalle de cliente",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/clientes/1",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "clientes",
+                "1"
+              ]
+            },
+            "description": "Detalle de un cliente específico. Reemplaza '1' con cliente_id."
+          }
+        },
+        {
+          "name": "Mis establecimientos",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/clientes/mis-establecimientos",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "clientes",
+                "mis-establecimientos"
+              ]
+            },
+            "description": "Establecimientos del cliente autenticado."
+          }
+        }
+      ]
+    },
+    {
+      "name": "Veterinarios",
+      "item": [
+        {
+          "name": "Dashboard - Panel del veterinario",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/veterinarios/dashboard",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "veterinarios",
+                "dashboard"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Me - Veterinario autenticado",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/veterinarios/me",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "veterinarios",
+                "me"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Detalle de veterinario",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/veterinarios/1",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "veterinarios",
+                "1"
+              ]
+            },
+            "description": "Detalle de un veterinario específico. Reemplaza '1' con veterinario_id."
+          }
+        },
+        {
+          "name": "Mis clientes",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/veterinarios/clientes",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "veterinarios",
+                "clientes"
+              ]
+            },
+            "description": "Lista de clientes asignados al veterinario autenticado."
+          }
+        },
+        {
+          "name": "Establecimientos de cliente",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/veterinarios/1/clientes/2/establecimientos",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "veterinarios",
+                "1",
+                "clientes",
+                "2",
+                "establecimientos"
+              ]
+            },
+            "description": "Establecimientos de un cliente específico. Reemplaza '1' con veterinario_id y '2' con cliente_id."
+          }
+        }
+      ]
+    },
+    {
+      "name": "Establecimientos",
+      "item": [
+        {
+          "name": "Detalle de establecimiento",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/establecimientos/1",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "establecimientos",
+                "1"
+              ]
+            },
+            "description": "Detalle del establecimiento con bebederos asociados. Reemplaza '1' con establecimiento_id."
+          }
+        },
+        {
+          "name": "Bebederos del establecimiento",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/establecimientos/1/bebederos",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "establecimientos",
+                "1",
+                "bebederos"
+              ]
+            },
+            "description": "Lista de bebederos de un establecimiento. Reemplaza '1' con establecimiento_id."
+          }
+        }
+      ]
+    },
+    {
+      "name": "Bebederos",
+      "item": [
+        {
+          "name": "Detalle de bebedero con monitoreos e imágenes",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/bebederos/1",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "bebederos",
+                "1"
+              ]
+            },
+            "description": "Detalle completo del bebedero incluyendo monitoreos e imágenes con image_url. Reemplaza '1' con bebedero_id."
+          },
+          "response": [
+            {
+              "name": "200 OK",
+              "originalRequest": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{token}}"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/api/v1/bebederos/1",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "bebederos",
+                    "1"
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "body": "{\n  \"id\": 1,\n  \"establecimiento_id\": 1,\n  \"establecimiento_nombre\": \"La Cabaña\",\n  \"nombre\": \"Bebedero Principal\",\n  \"ubicacion\": \"Corral Norte\",\n  \"ip_address\": \"192.168.1.100\",\n  \"puerto\": 8080,\n  \"cobertura_objetivo\": 85.5,\n  \"estado\": true,\n  \"ultima_medicion\": \"2026-07-01T10:30:00\",\n  \"fecha_creacion\": \"2026-06-15T08:00:00\",\n  \"monitoreos\": [\n    {\n      \"id\": 1,\n      \"fecha\": \"2026-07-01\",\n      \"timestamp\": \"2026-07-01T10:30:00\",\n      \"nivel_agua_cm\": 45.5,\n      \"distancia_sensor_cm\": 25.0,\n      \"cobertura_capsulas_porciento\": 85.0,\n      \"sensor_ultrasound\": true,\n      \"camera_activa\": true,\n      \"analyzer_activo\": true,\n      \"config_ok\": true,\n      \"error_message\": null,\n      \"imagenes\": [\n        {\n          \"id\": 1,\n          \"nombre_archivo\": \"bebedero_2026_07_01_103000.jpg\",\n          \"ruta_filesystem\": \"/var/images/bebedero_2026_07_01_103000.jpg\",\n          \"fecha_captura\": \"2026-07-01T10:30:00\",\n          \"tamano_bytes\": 256000,\n          \"checksum\": \"abc123def456\",\n          \"image_url\": \"/api/v1/imagenes/1\"\n        }\n      ]\n    }\n  ]\n}"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Imágenes",
+      "item": [
+        {
+          "name": "Descargar imagen",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/imagenes/1",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "imagenes",
+                "1"
+              ]
+            },
+            "description": "Descargar archivo de imagen. Requiere autenticación y aplicará control de acceso según rol (admin, veterinario, cliente). Reemplaza '1' con imagen_id."
+          },
+          "response": [
+            {
+              "name": "200 OK - Archivo de imagen",
+              "originalRequest": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{token}}"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/api/v1/imagenes/1",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "imagenes",
+                    "1"
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "image/jpeg"
+                }
+              ],
+              "body": "[Binary image data]"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://localhost:8000",
+      "type": "string"
+    },
+    {
+      "key": "token",
+      "value": "",
+      "type": "string"
+    }
+  ]
+}

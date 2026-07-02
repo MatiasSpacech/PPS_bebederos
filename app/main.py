@@ -1,7 +1,7 @@
 from fastapi import FastAPI
 
 from app.core.config import get_settings
-from app.routers import admin, auth, bebederos, clientes, establecimientos, health, veterinarios
+from app.routers import admin, auth, bebederos, clientes, establecimientos, health, veterinarios, imagenes
 
 settings = get_settings()
 
@@ -18,6 +18,7 @@ app.include_router(bebederos.router, prefix=settings.api_v1_prefix)
 app.include_router(establecimientos.router, prefix=settings.api_v1_prefix)
 app.include_router(veterinarios.router, prefix=settings.api_v1_prefix)
 app.include_router(clientes.router, prefix=settings.api_v1_prefix)
+app.include_router(imagenes.router, prefix=settings.api_v1_prefix)
 
 
 @app.get("/", include_in_schema=False)

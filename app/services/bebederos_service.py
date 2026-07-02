@@ -8,6 +8,9 @@ from app.models.establecimiento import Establecimiento
 from app.models.monitoreo_diario import MonitoreoDiario
 from app.models.usuario import Usuario
 from app.schemas.bebederos import BebederoDetalle, ImagenDetalle, MonitoreoDetalle
+from app.core.config import get_settings
+
+settings = get_settings()
 from app.schemas.recursos import BebederoResumen, EstablecimientoDetalle
 
 
@@ -120,7 +123,9 @@ def _to_detalle(bebedero: Bebedero) -> BebederoDetalle:
                 config_ok=monitoreo.config_ok,
                 error_message=monitoreo.error_message,
                 imagenes=[
-                    ImagenDetalle.model_validate(imagen)
+                    (lambda img: (setattr(img, "image_url", f"{settings.api_v1_prefix}/imagenes/{imagen.id}") or img))(
+                        ImagenDetalle.model_validate(imagen)
+                    )
                     for imagen in sorted(monitoreo.imagenes, key=lambda item: item.fecha_captura, reverse=True)
                 ],
             )

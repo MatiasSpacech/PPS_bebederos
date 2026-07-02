@@ -159,6 +159,36 @@ Guardar el `access_token` para hacer requests autenticados en los endpoints de a
 |--------|----------|-------------|
 | `GET` | `/api/v1/bebederos/{bebedero_id}` | Detalle con monitoreos e imágenes ordenados por fecha |
 
+## Imágenes
+
+- Almacenamiento: la base de datos guarda metadatos de cada imagen en la tabla `imagenes` (campos principales: `id`, `monitoreo_id`, `bebedero_id`, `nombre_archivo`, `ruta_filesystem`, `fecha_captura`, `tamano_bytes`, `checksum`). El archivo binario se guarda en el filesystem del servidor, y `ruta_filesystem` contiene la ruta al archivo en disco.
+
+- Endpoint para servir imágenes:
+  - `GET /api/v1/imagenes/{imagen_id}` — Devuelve el archivo de imagen con `FileResponse`.
+  - Requiere autenticación (`Authorization: Bearer <token>`).
+  - Aplica las mismas reglas RBAC que para ver un bebedero: `admin` puede ver todo; `veterinario` y `cliente` solo pueden acceder a imágenes de sus recursos asignados.
+  - Si el archivo no existe en disco, devuelve `404`.
+
+- `image_url` en respuestas de API:
+  - En el `GET /api/v1/bebederos/{bebedero_id}` cada `ImagenDetalle` incluye `image_url` con el path relativo `/api/v1/imagenes/{imagen_id}`. Esto permite al frontend construir la URL para obtener la imagen.
+
+- Uso desde React:
+  - Opción 1 (si el navegador puede incluir el header Authorization automáticamente, p. ej. cookie-based auth): usar `<img src={image_url} />`.
+  - Opción 2 (recomendado con JWT Bearer): `img` no soporta headers, por eso usar `fetch` con el header y crear un blob URL:
+
+```js
+// ejemplo React
+async function loadImage(token, imageUrl, imgElement) {
+  const res = await fetch(imageUrl, { headers: { Authorization: 'Bearer ' + token } });
+  if (!res.ok) throw new Error('Failed to load image');
+  const blob = await res.blob();
+  const objectUrl = URL.createObjectURL(blob);
+  imgElement.src = objectUrl;
+}
+```
+
+  - Opción 3: generar URLs pre-signed / temporales desde el backend (recomendado si se quiere usar `<img>` directamente sin fetch). Esto implicaría exponer un endpoint que cree un token con expiración corta y devolver una URL pública firmada.
+
 ## Flujo de Bootstrap
 
 ```

@@ -12,6 +12,7 @@ class ImagenDetalle(BaseModel):
     fecha_captura: datetime
     tamano_bytes: int | None = None
     checksum: str | None = None
+    image_url: str | None = None
 
 
 class MonitoreoDetalle(BaseModel):
